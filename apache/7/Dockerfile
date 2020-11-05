@@ -1,15 +1,14 @@
 FROM php:7-apache
 
 
-# Install composer (based on official composer Dockerfile)
+# Install composer (with guidance from official composer Dockerfile)
 
-RUN apt-get update
-RUN apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends \
   git \
   subversion \
   mercurial \
   openssh-client \
-  zlib1g-dev
+  libzip-dev
 
 RUN echo "memory_limit=-1" > "$PHP_INI_DIR/conf.d/memory-limit.ini" \
   && echo "date.timezone=${PHP_TIMEZONE:-UTC}" > "$PHP_INI_DIR/conf.d/date_timezone.ini"
@@ -18,11 +17,11 @@ RUN docker-php-ext-install zip
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_HOME /tmp
-ENV COMPOSER_VERSION 1.6.5
+ENV COMPOSER_VERSION 2.0.4
 
-RUN curl -s -f -L -o /tmp/installer.php https://raw.githubusercontent.com/composer/getcomposer.org/b107d959a5924af895807021fcef4ffec5a76aa9/web/installer \
+RUN curl -s -f -L -o /tmp/installer.php https://getcomposer.org/installer \
   && php -r " \
-    \$signature = '544e09ee996cdf60ece3804abc52599c22b1f40f4323403c44d44fdfdd586475ca9813a858088ffbc1f233e9b180f061'; \
+    \$signature = 'c31c1e292ad7be5f49291169c0ac8f683499edddcfd4e42232982d0fd193004208a58ff6f353fde0012d35fdd72bc394'; \
     \$hash = hash('SHA384', file_get_contents('/tmp/installer.php')); \
     if (!hash_equals(\$signature, \$hash)) { \
         unlink('/tmp/installer.php'); \
@@ -35,7 +34,7 @@ RUN curl -s -f -L -o /tmp/installer.php https://raw.githubusercontent.com/compos
 
 
 
-# Required/recommended settings for Drupal (based on official Drupal Dockerfile)
+# Required/recommended settings for Drupal (with guidance from official Drupal Dockerfile)
 
 # install the PHP extensions we need
 RUN set -ex; \
@@ -47,12 +46,15 @@ RUN set -ex; \
   savedAptMark="$(apt-mark showmanual)"; \
   \
   apt-get install -y --no-install-recommends \
+    libfreetype6-dev \
     libjpeg-dev \
     libpng-dev \
     libpq-dev \
+    libzip-dev \
   ; \
   \
-  docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr; \
+  docker-php-ext-configure gd --with-freetype --with-jpeg=/usr; \
+  \
   docker-php-ext-install -j "$(nproc)" \
     gd \
     opcache \
