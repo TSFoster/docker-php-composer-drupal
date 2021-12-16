@@ -17,11 +17,11 @@ RUN docker-php-ext-install zip
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_HOME /tmp
-ENV COMPOSER_VERSION 2.0.4
+ENV COMPOSER_VERSION 1.10.24
 
 RUN curl -s -f -L -o /tmp/installer.php https://getcomposer.org/installer \
   && php -r " \
-    \$signature = 'c31c1e292ad7be5f49291169c0ac8f683499edddcfd4e42232982d0fd193004208a58ff6f353fde0012d35fdd72bc394'; \
+    \$signature = '906a84df04cea2aa72f40b5f787e49f22d4c2f19492ac310e8cba5b96ac8b64115ac402c8cd292b8a03482574915d1a8'; \
     \$hash = hash('SHA384', file_get_contents('/tmp/installer.php')); \
     if (!hash_equals(\$signature, \$hash)) { \
         unlink('/tmp/installer.php'); \
